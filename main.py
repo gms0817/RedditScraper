@@ -32,9 +32,9 @@ def main():
         print("Number of Posts: " + str(num_of_posts))  # For debugging
 
         # Read-only instance of scraper
-        reddit = praw.Reddit(client_id="RVwOTqiFJbXKWzeHRztGHQ",
-                             client_secret="cg70MVjFpakehf6k-zwCXXim0KymfA",
-                             user_agent="GmS_11702")
+        reddit = praw.Reddit(client_id="",
+                             client_secret="",
+                             user_agent="")
 
         subreddit = subreddit_input
         start_year = 2012
@@ -81,9 +81,9 @@ def main():
             print(
                 f"Elapsed Time: {(time.time() - start_time) / 60: .2f}m | Submission Number: " + str(
                     submission_count))
+            # Save scraped data to csv
+            pd.DataFrame(submissions_dict).to_csv(directory + subreddit + '-' + str(num_of_posts) + '.csv', index=False)
         print(submissions_dict)
-        # Save scraped data to csv
-        pd.DataFrame(submissions_dict).to_csv(directory + subreddit + '.csv', index=False)
 
     # -----------------------------------------------------------------------
     # Create window
@@ -140,6 +140,7 @@ def main():
     sv_ttk.set_theme("dark")
     # Show window
     reddit_scraper.mainloop()
+
 
 if __name__ == '__main__':
     main()
