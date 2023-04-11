@@ -1,18 +1,12 @@
 # Imports
 import tkinter as tk
-
-import pmaw.Metadata
 import praw
 import pandas as pd
 import os
 import time
 import sv_ttk
 from pmaw import PushshiftAPI
-import datetime as dt
 from tkinter import ttk
-
-# Test
-# Test
 
 def main():
     # Scrape Reddit Based on User Input
@@ -36,9 +30,9 @@ def main():
         print("Number of Posts: " + str(num_of_posts))  # For debugging
 
         # Read-only instance of scraper
-        reddit = praw.Reddit(client_id="RVwOTqiFJbXKWzeHRztGHQ",
-                             client_secret="cg70MVjFpakehf6k-zwCXXim0KymfA",
-                             user_agent="GmS_11702")
+        reddit = praw.Reddit(client_id="",
+                             client_secret="",
+                             user_agent="")
 
         subreddit = subreddit_input
 
