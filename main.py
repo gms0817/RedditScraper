@@ -1,12 +1,14 @@
 # Imports
 import tkinter as tk
+
+import pmaw.Metadata
 import praw
 import pandas as pd
 import os
 import time
 import sv_ttk
-from psaw import PushshiftAPI
-from datetime import datetime
+from pmaw import PushshiftAPI
+import datetime as dt
 from tkinter import ttk
 
 
@@ -32,22 +34,16 @@ def main():
         print("Number of Posts: " + str(num_of_posts))  # For debugging
 
         # Read-only instance of scraper
-        reddit = praw.Reddit(client_id="",
-                             client_secret="",
-                             user_agent="")
+        reddit = praw.Reddit(client_id="RVwOTqiFJbXKWzeHRztGHQ",
+                             client_secret="cg70MVjFpakehf6k-zwCXXim0KymfA",
+                             user_agent="GmS_11702")
 
         subreddit = subreddit_input
-        start_year = 2012
-        end_year = 2022
 
         # Directory to store data
         directory = 'datasets/'
         if not os.path.exists(directory):
             os.makedirs(directory)
-
-        # Initialize time-stamps to define timeframe of posts
-        ts_after = int(datetime(start_year, 1, 1).timestamp())
-        ts_before = int(datetime(end_year + 1, 1, 1).timestamp())
 
         submissions_dict = {
             "title": [],
@@ -55,22 +51,23 @@ def main():
         }
 
         # Use PSAW to get ID of submissions based on time interval
+        print('Getting IDs...')
         gen = api.search_submissions(
-            after=ts_after,
-            before=ts_before,
             filter=['id'],
             subreddit=subreddit,
             limit=num_of_posts
         )
-
+        print('IDs Obtained.')
+        print('Getting Posts...')
         # Use PRAW to get submission information
         submission_count = 0
         start_time = time.time()
-        for submission_psaw in gen:
-            time_elapsed = str(time.time() - start_time)
+        for submission_pmaw in gen:
+            time_elapsed = time.time() - start_time
             submission_count = submission_count + 1
-            # Use psaw
-            submission_id = submission_psaw.d_['id']
+
+            # Use pmaw
+            submission_id = submission_pmaw['id']
 
             # Use praw
             submission_praw = reddit.submission(id=submission_id)
@@ -78,12 +75,15 @@ def main():
             # Add submission data to submissions dictionary
             submissions_dict["title"].append(submission_praw.title)
             submissions_dict["selftext"].append(submission_praw.selftext)
-            print(
-                f"Elapsed Time: {(time.time() - start_time) / 60: .2f}m | Submission Number: " + str(
-                    submission_count))
+
+            # Provide scraping progress to console
+            print(f'Elapsed Time: {time_elapsed / 60: .2f}m | '
+                  f'Submissions Scraped: {submission_count}/{num_of_posts} | '
+                  f'Target Subreddit: {subreddit_input}')
+
             # Save scraped data to csv
             pd.DataFrame(submissions_dict).to_csv(directory + subreddit + '-' + str(num_of_posts) + '.csv', index=False)
-        print(submissions_dict)
+        print(f'Obtained {num_of_posts} from {subreddit_input}.')
 
     # -----------------------------------------------------------------------
     # Create window
